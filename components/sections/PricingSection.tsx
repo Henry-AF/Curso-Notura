@@ -59,7 +59,7 @@ export function PricingSection() {
         {/* Header */}
         <TextReveal direction="up" className="max-w-3xl mx-auto text-center mb-12">
           <div className="notura-pill mb-6">💰 Investimento</div>
-          <h2 className="text-[clamp(2rem,4vw,3rem)] font-black tracking-[-0.03em] text-[#0A0A0A] leading-[1.08] mb-4">
+          <h2 className="text-[clamp(1.75rem,3.5vw,2.75rem)] font-bold tracking-[-0.02em] text-[#0A0A0A] leading-[1.08] mb-4">
             Invista na sua{' '}
             <ShuffleText
               text="produtividade"
@@ -116,7 +116,7 @@ export function PricingSection() {
 
             {/* RIGHT — purchase details */}
             <div
-              className="flex-1 p-8 flex flex-col gap-4"
+              className="flex-1 p-5 md:p-8 flex flex-col gap-4"
               style={{ background: 'linear-gradient(135deg, #EEF0FF 0%, #fff 100%)' }}
             >
 
@@ -179,14 +179,16 @@ export function PricingSection() {
               </div>
 
               {/* CTA */}
-              <GrainientBtn
-                href="https://pay.kiwify.com.br/sNuERYe"
-                size="lg"
-                className="w-full justify-center text-[0.875rem] font-extrabold tracking-wide"
-                magnetic
-              >
-                🚀 QUERO ACESSAR AGORA
-              </GrainientBtn>
+              <div className="w-full">
+                <GrainientBtn
+                  href="https://pay.kiwify.com.br/sNuERYe"
+                  size="lg"
+                  className="w-full justify-center text-[0.875rem] font-extrabold tracking-wide"
+                  magnetic
+                >
+                  🚀 QUERO ACESSAR AGORA
+                </GrainientBtn>
+              </div>
 
               {/* Guarantee */}
               <div

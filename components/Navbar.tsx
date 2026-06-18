@@ -2,10 +2,17 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { GrainientBtn } from '@/components/ui/GrainientBtn'
+import { StaggeredMenu } from '@/components/ui/StaggeredMenu/StaggeredMenu'
+
+const navLinks = [
+  { label: 'Funcionalidades', ariaLabel: 'Ver funcionalidades', link: '#funcionalidades' },
+  { label: 'A Oferta',        ariaLabel: 'Ver a oferta',        link: '#oferta'          },
+  { label: 'Depoimentos',     ariaLabel: 'Ver depoimentos',     link: '#depoimentos'     },
+  { label: 'Preços',          ariaLabel: 'Ver preços',          link: '#preco'           },
+]
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -13,10 +20,44 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  useEffect(() => {
+    const handlePanelLinkClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      const anchor = target.closest('a[href^="#"]') as HTMLAnchorElement | null
+      if (!anchor) return
+
+      const href = anchor.getAttribute('href')
+      if (!href) return
+
+      e.preventDefault()
+
+      // Fechar o menu StaggeredMenu clicando no toggle se estiver aberto
+      const wrapper = document.querySelector('.staggered-menu-wrapper')
+      const isOpen = wrapper?.hasAttribute('data-open')
+      if (isOpen) {
+        const toggleBtn = document.querySelector('.sm-toggle') as HTMLButtonElement | null
+        toggleBtn?.click()
+      }
+
+      // Scroll suave com pequeno delay para aguardar animação de fechar
+      setTimeout(() => {
+        const section = document.querySelector(href)
+        if (section) {
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+        document.body.style.overflow = ''
+      }, 320)
+    }
+
+    document.addEventListener('click', handlePanelLinkClick)
+    return () => document.removeEventListener('click', handlePanelLinkClick)
+  }, [])
+
   return (
     <>
+      {/* ── DESKTOP NAVBAR ── */}
       <nav
-        className="fixed top-0 left-0 right-0 z-50 h-[72px] flex items-center"
+        className="fixed top-0 left-0 right-0 z-50 h-[72px] items-center hidden md:flex"
         style={{
           background: scrolled ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.75)',
           backdropFilter: 'blur(14px)',
@@ -47,12 +88,12 @@ export function Navbar() {
               </span>
             </a>
 
-            {/* Desktop nav */}
-            <ul className="hidden md:flex items-center gap-8 list-none">
-              {[['Funcionalidades', '#funcionalidades'], ['Depoimentos', '#depoimentos'], ['Preços', '#preco']].map(([label, href]) => (
+            {/* Links */}
+            <ul className="flex items-center gap-8 list-none">
+              {navLinks.map(({ label, link }) => (
                 <li key={label}>
                   <a
-                    href={href}
+                    href={link}
                     className="text-sm font-medium text-zinc-500 hover:text-[#5341CD] no-underline transition-colors duration-200"
                   >
                     {label}
@@ -61,62 +102,89 @@ export function Navbar() {
               ))}
             </ul>
 
-            {/* Desktop CTA */}
-            <div className="flex items-center gap-3">
-              <div className="hidden md:block">
-                <GrainientBtn href="https://pay.kiwify.com.br/sNuERYe" magnetic>
-                  QUERO ACESSAR AGORA
-                </GrainientBtn>
-              </div>
-              {/* Mobile menu */}
-              <button
-                onClick={() => setMobileOpen(!mobileOpen)}
-                className="md:hidden flex items-center justify-center w-10 h-10 rounded-full border border-[#DDD8F5] bg-white cursor-pointer text-zinc-600"
-                aria-label="Menu"
-              >
-                {mobileOpen ? (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                ) : (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                    <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
-                  </svg>
-                )}
-              </button>
-            </div>
+            {/* CTA */}
+            <GrainientBtn href="https://pay.kiwify.com.br/sNuERYe" magnetic>
+              QUERO ACESSAR AGORA
+            </GrainientBtn>
           </div>
         </div>
       </nav>
 
-      {/* Mobile menu drawer */}
+      {/* ── MOBILE NAVBAR com StaggeredMenu ── */}
       <div
-        className="fixed inset-x-0 top-[72px] z-40 md:hidden"
+        className="fixed top-0 left-0 right-0 md:hidden"
         style={{
-          background: 'rgba(255,255,255,0.97)',
-          backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid #DDD8F5',
-          transform: mobileOpen ? 'translateY(0)' : 'translateY(-110%)',
-          transition: 'transform 350ms cubic-bezier(0.16,1,0.3,1)',
-          boxShadow: '0 12px 40px rgba(83,65,205,0.1)',
+          height: '100dvh',
+          zIndex: 50,
+          pointerEvents: 'none',
         }}
       >
-        <div className="page-shell py-6 flex flex-col gap-4">
-          {[['Funcionalidades', '#funcionalidades'], ['Depoimentos', '#depoimentos'], ['Preços', '#preco']].map(([label, href]) => (
-            <a
-              key={label}
-              href={href}
-              onClick={() => setMobileOpen(false)}
-              className="text-base font-medium text-zinc-700 hover:text-[#5341CD] no-underline py-2 border-b border-[#f4f4f5] transition-colors"
+        {/* Fundo da navbar — só os 72px do topo */}
+        <div
+          className="absolute top-0 left-0 right-0 h-[72px]"
+          style={{
+            background: scrolled ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.75)',
+            backdropFilter: 'blur(14px)',
+            WebkitBackdropFilter: 'blur(14px)',
+            borderBottom: scrolled
+              ? '1px solid rgba(221,216,245,0.5)'
+              : '1px solid transparent',
+            boxShadow: scrolled ? '0 2px 20px rgba(83,65,205,0.06)' : 'none',
+            transition: 'background 300ms ease, border-color 300ms ease, box-shadow 300ms ease',
+            pointerEvents: 'none',
+          }}
+        />
+
+        {/* Logo à esquerda */}
+        <div
+          className="absolute top-0 left-0 h-[72px] flex items-center px-5"
+          style={{ pointerEvents: 'auto', zIndex: 60 }}
+        >
+          <a href="#" className="flex items-center gap-2 no-underline">
+            <div
+              className="w-8 h-8 rounded-[12px] flex items-center justify-center"
+              style={{
+                background: 'var(--notura-bg-gradient-grainient)',
+                boxShadow: 'var(--notura-shadow-glow)',
+              }}
             >
-              {label}
-            </a>
-          ))}
-          <GrainientBtn href="https://pay.kiwify.com.br/sNuERYe" size="lg" className="w-full text-center mt-2">
-            🚀 QUERO ACESSAR AGORA
-          </GrainientBtn>
+              <Image src="/logo-notura.svg" alt="Notura" width={18} height={18} />
+            </div>
+            <span
+              className="font-semibold text-sm tracking-tight text-[#0A0A0A]"
+              style={{ fontFamily: 'Poppins, sans-serif' }}
+            >
+              Notura<span className="text-[#5341CD]"> + R.E.U.N.I.R.</span>
+            </span>
+          </a>
+        </div>
+
+        {/* StaggeredMenu — ocupa height total para o painel funcionar */}
+        <div
+          className="absolute inset-0"
+          style={{ pointerEvents: 'none' }}
+        >
+          <StaggeredMenu
+            position="right"
+            items={navLinks}
+            socialItems={[]}
+            displaySocials={false}
+            displayItemNumbering={false}
+            menuButtonColor="#0A0A0A"
+            openMenuButtonColor="#ffffff"
+            changeMenuColorOnOpen={true}
+            colors={['#9B8AFB', '#5341CD']}
+            logoUrl=""
+            accentColor="#9B8AFB"
+            closeOnClickAway={true}
+            onMenuOpen={() => { document.body.style.overflow = 'hidden' }}
+            onMenuClose={() => { document.body.style.overflow = '' }}
+          />
         </div>
       </div>
+
+      {/* Spacer para compensar navbar fixa */}
+      <div className="h-[72px]" />
     </>
   )
 }
