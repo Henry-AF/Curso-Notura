@@ -1,0 +1,25 @@
+name: Cron - E-mail planos expirando
+
+on:
+  schedule:
+    # Toda segunda-feira às 08:00 UTC
+    - cron: "0 8 * * *"
+  workflow_dispatch: # permite rodar manualmente pelo GitHub Actions UI
+
+jobs:
+  notify-expiring-plans:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Chamar endpoint de planos expirando
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X GET \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/cron/expiring-plans")
+
+          echo "HTTP status: $response"
+
+          if [ "$response" != "200" ]; then
+            echo "Falha no cron! Status: $response"
+            exit 1
+          fi

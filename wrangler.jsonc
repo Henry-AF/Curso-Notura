@@ -12,14 +12,31 @@
 		"binding": "ASSETS"
 	},
 	"services": [
-  {
-    "binding": "WORKER_SELF_REFERENCE",
-    "service": "cursonotura"
-  }
-],
+		{
+			"binding": "WORKER_SELF_REFERENCE",
+			"service": "cursonotura"
+		}
+	],
 	"images": {
 		// Enable image optimization
 		// see https://opennext.js.org/cloudflare/howtos/image
 		"binding": "IMAGES"
+	},
+	// Cron Trigger: dispara 1x/dia às 08:00 UTC
+	// O worker chama /api/cron/expiring-plans via WORKER_SELF_REFERENCE
+	// Veja: https://developers.cloudflare.com/workers/configuration/cron-triggers/
+	"triggers": {
+		"crons": ["0 8 * * *"]
+	},
+	// Declare as variáveis de ambiente abaixo.
+	// Os VALORES devem ser configurados em Cloudflare Dashboard → Workers → Settings → Variables
+	// ou via `wrangler secret put NOME_DA_VAR` no terminal.
+	// NUNCA coloque valores reais aqui.
+	"vars": {
+		// SUPABASE_URL: URL do projeto Supabase (ex: https://xxx.supabase.co)
+		// SUPABASE_SERVICE_ROLE_KEY: chave service role do Supabase (Settings → API)
+		// RESEND_API_KEY: chave da API do Resend (resend.com → API Keys)
+		// KIWIFY_WEBHOOK_TOKEN: token que você definiu ao criar o webhook no Kiwify
+		// CRON_SECRET: string aleatória segura para proteger /api/cron/expiring-plans
 	}
 }
