@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { sendActivationEmail } from "@/lib/email/resend";
+import { sendPasswordSetupEmail } from "@/lib/email/resend";
 import type { KiwifyWebhookPayload } from "@/lib/kiwify/types";
 
 const HANDLED_EVENTS = new Set([
@@ -142,10 +142,14 @@ async function handleOrderApproved(payload: KiwifyWebhookPayload) {
     return;
   }
 
-  // --- Gera magic link e envia e-mail de ativação ---
-  const magicLink = await generateMagicLink(email);
-  if (magicLink) {
-    await sendActivationEmail({ to: email, name, magicLink });
+  // --- Gera link de recovery e envia e-mail (falha não derruba ativação) ---
+  try {
+    const recoveryLink = await generateRecoveryLink(email);
+    if (recoveryLink) {
+      await sendPasswordSetupEmail({ to: email, name, recoveryLink });
+    }
+  } catch (emailErr) {
+    console.error("[kiwify-webhook] falha no envio do e-mail de ativação — userId:", userId, emailErr);
   }
 
   console.log("[kiwify-webhook] order_approved processada — userId:", userId);
@@ -235,15 +239,17 @@ async function upsertAuthUser(email: string): Promise<string | null> {
   return null;
 }
 
-async function generateMagicLink(email: string): Promise<string | null> {
-  const { data, error } =
-    await supabaseAdmin.auth.admin.generateLink({
-      type: "magiclink",
-      email,
-    });
+async function generateRecoveryLink(email: string): Promise<string | null> {
+  const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+    type: "recovery",
+    email,
+    options: {
+      redirectTo: "https://app.notura.com.br/reset-password",
+    },
+  });
 
   if (error) {
-    console.error("[kiwify-webhook] erro ao gerar magic link:", error);
+    console.error("[kiwify-webhook] erro ao gerar link de recovery:", error);
     return null;
   }
 
