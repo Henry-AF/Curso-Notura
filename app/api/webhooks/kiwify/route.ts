@@ -143,13 +143,25 @@ async function handleOrderApproved(payload: KiwifyWebhookPayload) {
   }
 
   // --- Gera link de recovery e envia e-mail (falha não derruba ativação) ---
+  console.log("[kiwify-webhook] RESEND_API_KEY presente:", !!process.env.RESEND_API_KEY);
   try {
+    console.log("[kiwify-webhook] iniciando geração de recovery link");
     const recoveryLink = await generateRecoveryLink(email);
+    console.log("[kiwify-webhook] recovery link gerado:", !!recoveryLink);
+
     if (recoveryLink) {
-      await sendPasswordSetupEmail({ to: email, name, recoveryLink });
+      console.log("[kiwify-webhook] iniciando envio via resend");
+      const resendResponse = await sendPasswordSetupEmail({ to: email, name, recoveryLink });
+      console.log("[kiwify-webhook] resend respondeu:", JSON.stringify(resendResponse));
+    } else {
+      console.warn("[kiwify-webhook] recovery link nulo — e-mail não enviado");
     }
   } catch (emailErr) {
-    console.error("[kiwify-webhook] falha no envio do e-mail de ativação — userId:", userId, emailErr);
+    const err = emailErr as Error;
+    console.error("[kiwify-webhook] falha no e-mail de ativação — userId:", userId,
+      "\nmessage:", err?.message,
+      "\nstack:", err?.stack,
+    );
   }
 
   console.log("[kiwify-webhook] order_approved processada — userId:", userId);
