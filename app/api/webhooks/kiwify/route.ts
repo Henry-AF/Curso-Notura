@@ -123,11 +123,10 @@ async function handleOrderApproved(payload: KiwifyWebhookPayload) {
 
   const renewsAt = addDays(30);
 
-  // --- Cria ou atualiza o perfil ---
+  // --- Cria ou atualiza o perfil (email vive em auth.users, não duplicamos aqui) ---
   const { error } = await supabaseAdmin.from("profiles").upsert(
     {
       id: userId,
-      email,
       plan: "pro",
       plan_status: "active",
       plan_source: "kiwify",
@@ -156,6 +155,9 @@ async function handleSubscriptionRenewed(payload: KiwifyWebhookPayload) {
   const email = payload.Customer?.email;
   if (!email) return;
 
+  const userId = await upsertAuthUser(email);
+  if (!userId) return;
+
   const renewsAt = addDays(30);
 
   const { error } = await supabaseAdmin
@@ -165,7 +167,7 @@ async function handleSubscriptionRenewed(payload: KiwifyWebhookPayload) {
       plan_status: "active",
       plan_renews_at: renewsAt.toISOString(),
     })
-    .eq("email", email);
+    .eq("id", userId);
 
   if (error) {
     console.error("[kiwify-webhook] erro ao renovar plano:", error);
@@ -178,10 +180,13 @@ async function handleSubscriptionCanceled(payload: KiwifyWebhookPayload) {
   const email = payload.Customer?.email;
   if (!email) return;
 
+  const userId = await upsertAuthUser(email);
+  if (!userId) return;
+
   const { error } = await supabaseAdmin
     .from("profiles")
     .update({ plan: "free", plan_status: "canceled" })
-    .eq("email", email);
+    .eq("id", userId);
 
   if (error) {
     console.error("[kiwify-webhook] erro ao cancelar plano:", error);
@@ -194,10 +199,13 @@ async function handleSubscriptionLate(payload: KiwifyWebhookPayload) {
   const email = payload.Customer?.email;
   if (!email) return;
 
+  const userId = await upsertAuthUser(email);
+  if (!userId) return;
+
   const { error } = await supabaseAdmin
     .from("profiles")
     .update({ plan: "free", plan_status: "late" })
-    .eq("email", email);
+    .eq("id", userId);
 
   if (error) {
     console.error("[kiwify-webhook] erro ao marcar inadimplente:", error);
@@ -210,16 +218,7 @@ async function handleSubscriptionLate(payload: KiwifyWebhookPayload) {
 // Helpers
 
 async function upsertAuthUser(email: string): Promise<string | null> {
-  // 1. Checa a tabela profiles (query leve, evita chamadas ao auth)
-  const { data: profile } = await supabaseAdmin
-    .from("profiles")
-    .select("id")
-    .eq("email", email)
-    .maybeSingle();
-
-  if (profile?.id) return profile.id;
-
-  // 2. Tenta criar (falha silenciosamente se e-mail já existe)
+  // 1. Tenta criar — retorna id imediatamente se é um usuário novo
   const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
     email,
     email_confirm: true,
@@ -227,7 +226,7 @@ async function upsertAuthUser(email: string): Promise<string | null> {
 
   if (!createErr && created.user?.id) return created.user.id;
 
-  // 3. Fallback: usuário existe no auth mas ainda não tem perfil — busca paginada
+  // 2. Já existe — localiza pelo email em auth.users
   const { data: list } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
   const found = list?.users?.find((u) => u.email === email);
   if (found) return found.id;
