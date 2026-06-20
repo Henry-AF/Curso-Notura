@@ -12,9 +12,11 @@ const HANDLED_EVENTS = new Set([
 
 export async function POST(request: NextRequest) {
   let rawPayload: unknown;
+  let rawBody: string;
 
   try {
-    rawPayload = await request.json();
+    rawBody = await request.text();
+    rawPayload = JSON.parse(rawBody);
   } catch {
     console.error("[kiwify-webhook] payload inválido — não é JSON");
     return NextResponse.json({ error: "invalid payload" }, { status: 400 });
@@ -31,6 +33,40 @@ export async function POST(request: NextRequest) {
   console.log("[kiwify-webhook] DIAGNÓSTICO — headers:", JSON.stringify(headerEntries));
   console.log("[kiwify-webhook] DIAGNÓSTICO — queryParams:", JSON.stringify(queryParams));
   console.log("[kiwify-webhook] DIAGNÓSTICO — bodyKeys:", JSON.stringify(bodyKeys));
+
+  // TODO: remover após identificar o algoritmo correto
+  // Web Crypto API (crypto.subtle) — disponível nativamente em Cloudflare Workers
+  {
+    const enc = new TextEncoder();
+    const tok = process.env.KIWIFY_WEBHOOK_TOKEN ?? "";
+
+    const toHex = (buf: ArrayBuffer) =>
+      Array.from(new Uint8Array(buf))
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
+
+    const [h1, h2, h4] = await Promise.all([
+      crypto.subtle.digest("SHA-1", enc.encode(rawBody + tok)),
+      crypto.subtle.digest("SHA-1", enc.encode(tok + rawBody)),
+      crypto.subtle.digest("SHA-1", enc.encode(rawBody)),
+    ]);
+
+    const hmacKey = await crypto.subtle.importKey(
+      "raw",
+      enc.encode(tok),
+      { name: "HMAC", hash: "SHA-1" },
+      false,
+      ["sign"]
+    );
+    const h3 = await crypto.subtle.sign("HMAC", hmacKey, enc.encode(rawBody));
+
+    console.log("[kiwify-webhook] DIAGNÓSTICO signature recebida :", searchParams.get("signature"));
+    console.log("[kiwify-webhook] candidato sha1(body+token)     :", toHex(h1));
+    console.log("[kiwify-webhook] candidato sha1(token+body)     :", toHex(h2));
+    console.log("[kiwify-webhook] candidato hmac-sha1            :", toHex(h3));
+    console.log("[kiwify-webhook] candidato sha1(body)           :", toHex(h4));
+    // MD5 não é suportado pela Web Crypto API — omitido
+  }
 
   // --- Validação do token de segurança (origem ainda a confirmar) ---
   const expectedToken = process.env.KIWIFY_WEBHOOK_TOKEN;
