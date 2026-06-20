@@ -4,7 +4,7 @@ import { sendActivationEmail } from "@/lib/email/resend";
 import type { KiwifyWebhookPayload } from "@/lib/kiwify/types";
 
 const HANDLED_EVENTS = new Set([
-  "compra_aprovada",
+  "order_approved",
   "subscription_renewed",
   "subscription_canceled",
   "subscription_late",
@@ -21,21 +21,49 @@ export async function POST(request: NextRequest) {
   }
 
   const payload = rawPayload as KiwifyWebhookPayload;
-  const event = payload?.event ?? "desconhecido";
+  const event = payload?.webhook_event_type ?? "desconhecido";
 
-  // --- Validação do token de segurança (token vem no corpo do payload) ---
+  // TODO: remover este log após confirmar a origem do token
+  const headerEntries = Object.fromEntries(request.headers.entries());
+  const { searchParams } = new URL(request.url);
+  const queryParams = Object.fromEntries(searchParams.entries());
+  const bodyKeys = Object.keys(rawPayload as Record<string, unknown>);
+  console.log("[kiwify-webhook] DIAGNÓSTICO — headers:", JSON.stringify(headerEntries));
+  console.log("[kiwify-webhook] DIAGNÓSTICO — queryParams:", JSON.stringify(queryParams));
+  console.log("[kiwify-webhook] DIAGNÓSTICO — bodyKeys:", JSON.stringify(bodyKeys));
+
+  // --- Validação do token de segurança (origem ainda a confirmar) ---
   const expectedToken = process.env.KIWIFY_WEBHOOK_TOKEN;
   if (!expectedToken) {
     console.error("[kiwify-webhook] KIWIFY_WEBHOOK_TOKEN não configurado");
     return NextResponse.json({ error: "server misconfigured" }, { status: 500 });
   }
 
-  if (!payload.token || payload.token !== expectedToken) {
-    console.warn("[kiwify-webhook] token inválido — evento:", event);
+  // Tenta extrair o token em ordem de prioridade:
+  // 1. Header com prefixo "kiwify" ou "x-kiwify"
+  const kiwifyHeader = Object.entries(headerEntries).find(
+    ([k]) => k.startsWith("kiwify") || k.startsWith("x-kiwify")
+  );
+  const tokenFromHeader = kiwifyHeader?.[1];
+
+  // 2. Query param "signature" ou "token"
+  const tokenFromQuery = searchParams.get("signature") ?? searchParams.get("token") ?? undefined;
+
+  // 3. Campo "token" no body
+  const tokenFromBody = payload.token;
+
+  const receivedToken = tokenFromHeader ?? tokenFromQuery ?? tokenFromBody;
+
+  if (!receivedToken || receivedToken !== expectedToken) {
+    console.warn(
+      "[kiwify-webhook] token inválido — tentativas: header=%s query=%s body=%s",
+      tokenFromHeader ?? "(ausente)",
+      tokenFromQuery ?? "(ausente)",
+      tokenFromBody ? "(presente)" : "(ausente)"
+    );
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  // Loga o evento recebido (sem expor o token nem dados sensíveis)
   const safeLog = {
     event,
     orderId: payload.data?.id,
@@ -52,8 +80,8 @@ export async function POST(request: NextRequest) {
 
   try {
     switch (event) {
-      case "compra_aprovada":
-        await handleCompraAprovada(payload);
+      case "order_approved":
+        await handleOrderApproved(payload);
         break;
       case "subscription_renewed":
         await handleSubscriptionRenewed(payload);
@@ -75,7 +103,7 @@ export async function POST(request: NextRequest) {
 
 // ---------------------------------------------------------------------------
 
-async function handleCompraAprovada(payload: KiwifyWebhookPayload) {
+async function handleOrderApproved(payload: KiwifyWebhookPayload) {
   const { data } = payload;
   const email = data.Customer?.email;
   const name = data.Customer?.full_name ?? "";
@@ -131,7 +159,7 @@ async function handleCompraAprovada(payload: KiwifyWebhookPayload) {
     await sendActivationEmail({ to: email, name, magicLink });
   }
 
-  console.log("[kiwify-webhook] compra_aprovada processada — userId:", userId);
+  console.log("[kiwify-webhook] order_approved processada — userId:", userId);
 }
 
 async function handleSubscriptionRenewed(payload: KiwifyWebhookPayload) {

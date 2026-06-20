@@ -1,5 +1,5 @@
 export type KiwifyEvent =
-  | "compra_aprovada"
+  | "order_approved"
   | "subscription_renewed"
   | "subscription_canceled"
   | "subscription_late"
@@ -39,7 +39,7 @@ export interface KiwifyOrderData {
 }
 
 export interface KiwifyWebhookPayload {
-  event: KiwifyEvent;
-  token: string;
+  webhook_event_type: KiwifyEvent;
+  token?: string;
   data: KiwifyOrderData;
 }
