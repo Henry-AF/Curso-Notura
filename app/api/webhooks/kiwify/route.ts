@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
   const payload = rawPayload as KiwifyWebhookPayload;
   const event = payload?.webhook_event_type ?? "desconhecido";
-  const orderId = payload.data?.id;
+  const orderId = payload.order_id;
 
   if (!HANDLED_EVENTS.has(event)) {
     console.log("[kiwify-webhook] evento ignorado:", event);
@@ -95,11 +95,10 @@ export async function POST(request: NextRequest) {
 // ---------------------------------------------------------------------------
 
 async function handleOrderApproved(payload: KiwifyWebhookPayload) {
-  const { data } = payload;
-  const email = data.Customer?.email;
-  const name = data.Customer?.full_name ?? "";
-  const orderId = data.id;
-  const subscriptionId = data.Subscription?.id;
+  const email = payload.Customer?.email;
+  const name = payload.Customer?.full_name ?? "";
+  const orderId = payload.order_id;
+  const subscriptionId = payload.Subscription?.id ?? payload.subscription_id;
 
   if (!email) {
     console.warn("[kiwify-webhook] order_approved sem e-mail de cliente");
@@ -154,7 +153,7 @@ async function handleOrderApproved(payload: KiwifyWebhookPayload) {
 }
 
 async function handleSubscriptionRenewed(payload: KiwifyWebhookPayload) {
-  const email = payload.data?.Customer?.email;
+  const email = payload.Customer?.email;
   if (!email) return;
 
   const renewsAt = addDays(30);
@@ -176,7 +175,7 @@ async function handleSubscriptionRenewed(payload: KiwifyWebhookPayload) {
 }
 
 async function handleSubscriptionCanceled(payload: KiwifyWebhookPayload) {
-  const email = payload.data?.Customer?.email;
+  const email = payload.Customer?.email;
   if (!email) return;
 
   const { error } = await supabaseAdmin
@@ -192,7 +191,7 @@ async function handleSubscriptionCanceled(payload: KiwifyWebhookPayload) {
 }
 
 async function handleSubscriptionLate(payload: KiwifyWebhookPayload) {
-  const email = payload.data?.Customer?.email;
+  const email = payload.Customer?.email;
   if (!email) return;
 
   const { error } = await supabaseAdmin

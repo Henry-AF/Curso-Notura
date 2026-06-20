@@ -7,39 +7,27 @@ export type KiwifyEvent =
 
 export interface KiwifyCustomer {
   full_name: string;
+  first_name?: string;
   email: string;
+  mobile?: string;
   CPF?: string;
-  phone?: string;
-  ip?: string;
 }
 
 export interface KiwifySubscription {
   id: string;
   status: string;
-  charge_frequency?: string;
   start_date?: string;
   next_payment?: string;
-  cancel_date?: string;
-}
-
-export interface KiwifyOrderData {
-  id: string;
-  Customer: KiwifyCustomer;
-  Subscription?: KiwifySubscription;
-  product?: {
-    id: string;
-    name: string;
-    type?: string;
-  };
-  Payment?: {
-    method: string;
-    installments?: number;
-    status?: string;
-  };
+  plan?: string;
+  charges?: number;
 }
 
 export interface KiwifyWebhookPayload {
   webhook_event_type: KiwifyEvent;
-  token?: string;
-  data: KiwifyOrderData;
+  order_id: string;
+  order_ref?: string;
+  order_status?: string;
+  subscription_id?: string;
+  Customer: KiwifyCustomer;
+  Subscription?: KiwifySubscription;
 }
