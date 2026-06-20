@@ -22,97 +22,52 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "invalid payload" }, { status: 400 });
   }
 
-  const payload = rawPayload as KiwifyWebhookPayload;
-  const event = payload?.webhook_event_type ?? "desconhecido";
-
-  // TODO: remover este log após confirmar a origem do token
-  const headerEntries = Object.fromEntries(request.headers.entries());
-  const { searchParams } = new URL(request.url);
-  const queryParams = Object.fromEntries(searchParams.entries());
-  const bodyKeys = Object.keys(rawPayload as Record<string, unknown>);
-  console.log("[kiwify-webhook] DIAGNÓSTICO — headers:", JSON.stringify(headerEntries));
-  console.log("[kiwify-webhook] DIAGNÓSTICO — queryParams:", JSON.stringify(queryParams));
-  console.log("[kiwify-webhook] DIAGNÓSTICO — bodyKeys:", JSON.stringify(bodyKeys));
-
-  // TODO: remover após identificar o algoritmo correto
-  // Web Crypto API (crypto.subtle) — disponível nativamente em Cloudflare Workers
-  {
-    const enc = new TextEncoder();
-    const tok = process.env.KIWIFY_WEBHOOK_TOKEN ?? "";
-
-    const toHex = (buf: ArrayBuffer) =>
-      Array.from(new Uint8Array(buf))
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join("");
-
-    const [h1, h2, h4] = await Promise.all([
-      crypto.subtle.digest("SHA-1", enc.encode(rawBody + tok)),
-      crypto.subtle.digest("SHA-1", enc.encode(tok + rawBody)),
-      crypto.subtle.digest("SHA-1", enc.encode(rawBody)),
-    ]);
-
-    const hmacKey = await crypto.subtle.importKey(
-      "raw",
-      enc.encode(tok),
-      { name: "HMAC", hash: "SHA-1" },
-      false,
-      ["sign"]
-    );
-    const h3 = await crypto.subtle.sign("HMAC", hmacKey, enc.encode(rawBody));
-
-    console.log("[kiwify-webhook] DIAGNÓSTICO signature recebida :", searchParams.get("signature"));
-    console.log("[kiwify-webhook] candidato sha1(body+token)     :", toHex(h1));
-    console.log("[kiwify-webhook] candidato sha1(token+body)     :", toHex(h2));
-    console.log("[kiwify-webhook] candidato hmac-sha1            :", toHex(h3));
-    console.log("[kiwify-webhook] candidato sha1(body)           :", toHex(h4));
-    // MD5 não é suportado pela Web Crypto API — omitido
-  }
-
-  // --- Validação do token de segurança (origem ainda a confirmar) ---
+  // --- Validação HMAC-SHA1 via Web Crypto API (timing-safe por spec) ---
   const expectedToken = process.env.KIWIFY_WEBHOOK_TOKEN;
   if (!expectedToken) {
     console.error("[kiwify-webhook] KIWIFY_WEBHOOK_TOKEN não configurado");
     return NextResponse.json({ error: "server misconfigured" }, { status: 500 });
   }
 
-  // Tenta extrair o token em ordem de prioridade:
-  // 1. Header com prefixo "kiwify" ou "x-kiwify"
-  const kiwifyHeader = Object.entries(headerEntries).find(
-    ([k]) => k.startsWith("kiwify") || k.startsWith("x-kiwify")
+  const { searchParams } = new URL(request.url);
+  const receivedSignature = searchParams.get("signature") ?? "";
+
+  const enc = new TextEncoder();
+  const hmacKey = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(expectedToken),
+    { name: "HMAC", hash: "SHA-1" },
+    false,
+    ["verify"]
   );
-  const tokenFromHeader = kiwifyHeader?.[1];
 
-  // 2. Query param "signature" ou "token"
-  const tokenFromQuery = searchParams.get("signature") ?? searchParams.get("token") ?? undefined;
-
-  // 3. Campo "token" no body
-  const tokenFromBody = payload.token;
-
-  const receivedToken = tokenFromHeader ?? tokenFromQuery ?? tokenFromBody;
-
-  if (!receivedToken || receivedToken !== expectedToken) {
-    console.warn(
-      "[kiwify-webhook] token inválido — tentativas: header=%s query=%s body=%s",
-      tokenFromHeader ?? "(ausente)",
-      tokenFromQuery ?? "(ausente)",
-      tokenFromBody ? "(presente)" : "(ausente)"
+  let signatureValid = false;
+  try {
+    signatureValid = await crypto.subtle.verify(
+      "HMAC",
+      hmacKey,
+      hexToBytes(receivedSignature),
+      enc.encode(rawBody)
     );
+  } catch {
+    signatureValid = false;
+  }
+
+  if (!signatureValid) {
+    console.warn("[kiwify-webhook] assinatura inválida");
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  const safeLog = {
-    event,
-    orderId: payload.data?.id,
-    customerEmail: maskEmail(payload.data?.Customer?.email),
-    subscriptionId: payload.data?.Subscription?.id,
-  };
-  console.log("[kiwify-webhook] recebido:", JSON.stringify(safeLog));
+  const payload = rawPayload as KiwifyWebhookPayload;
+  const event = payload?.webhook_event_type ?? "desconhecido";
+  const orderId = payload.data?.id;
 
-  // Ignora eventos não tratados (Kiwify não vai ficar reprocessando)
   if (!HANDLED_EVENTS.has(event)) {
     console.log("[kiwify-webhook] evento ignorado:", event);
     return NextResponse.json({ received: true });
   }
+
+  console.log("[kiwify-webhook] processando:", event, "orderId:", orderId);
 
   try {
     switch (event) {
@@ -129,9 +84,9 @@ export async function POST(request: NextRequest) {
         await handleSubscriptionLate(payload);
         break;
     }
+    console.log("[kiwify-webhook] concluído:", event, "orderId:", orderId);
   } catch (err) {
-    // Não derruba o endpoint — Kiwify não reprocessa se receber 200
-    console.error("[kiwify-webhook] erro ao processar evento:", event, err);
+    console.error("[kiwify-webhook] erro ao processar:", event, "orderId:", orderId, err);
   }
 
   return NextResponse.json({ received: true });
@@ -147,7 +102,7 @@ async function handleOrderApproved(payload: KiwifyWebhookPayload) {
   const subscriptionId = data.Subscription?.id;
 
   if (!email) {
-    console.warn("[kiwify-webhook] compra_aprovada sem e-mail de cliente");
+    console.warn("[kiwify-webhook] order_approved sem e-mail de cliente");
     return;
   }
 
@@ -301,6 +256,15 @@ function addDays(days: number): Date {
   const d = new Date();
   d.setDate(d.getDate() + days);
   return d;
+}
+
+function hexToBytes(hex: string): Uint8Array<ArrayBuffer> {
+  const buf = new ArrayBuffer(hex.length / 2);
+  const bytes = new Uint8Array(buf);
+  for (let i = 0; i < hex.length; i += 2) {
+    bytes[i / 2] = parseInt(hex.slice(i, i + 2), 16);
+  }
+  return bytes;
 }
 
 function maskEmail(email?: string): string {
