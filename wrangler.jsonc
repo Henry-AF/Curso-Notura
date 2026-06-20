@@ -38,5 +38,11 @@
 		// RESEND_API_KEY: chave da API do Resend (resend.com → API Keys)
 		// KIWIFY_WEBHOOK_TOKEN: token que você definiu ao criar o webhook no Kiwify
 		// CRON_SECRET: string aleatória segura para proteger /api/cron/expiring-plans
+	},
+	"observability": {
+		"logs": {
+			"enabled": true,
+			"invocation_logs": true
+		}
 	}
 }
