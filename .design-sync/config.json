@@ -1,0 +1,35 @@
+{
+  "projectId": "961720dc-f681-4752-8a75-281503718a75",
+  "shape": "package",
+  "pkg": "notura-landing",
+  "globalName": "NoturaLanding",
+  "srcDir": "components",
+  "tsconfig": "./.design-sync/tsconfig.sync.json",
+  "cssEntry": "./.design-sync/.cache/tailwind-build.css",
+  "buildCmd": "npx tailwindcss -i ./app/globals.css -o ./.design-sync/.cache/tailwind-build.css",
+  "componentSrcMap": {
+    "ClarityProvider": null,
+    "CrossLinks": null,
+    "Fill": null,
+    "LegalPage": null,
+    "Note": null,
+    "P": null,
+    "Table": null,
+    "Td": null,
+    "Th": null,
+    "Thead": null,
+    "Tr": null
+  },
+  "guidelinesGlob": [],
+  "readmeHeader": ".design-sync/conventions.md",
+  "overrides": {
+    "Navbar": { "cardMode": "single", "primaryStory": "Default" },
+    "Footer": { "cardMode": "column" },
+    "AuthorityBar": { "cardMode": "column" },
+    "GrainientBtn": { "cardMode": "column" },
+    "StaggeredMenu": { "cardMode": "single", "viewport": "360x420" }
+  },
+  "libOverrides": {
+    "source-kit.mjs": "synth-entry mode used `export *` only, which drops default exports (ShinyText, TextType) — adds a default-as-<Base> re-export per file when present"
+  }
+}
