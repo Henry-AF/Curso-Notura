@@ -71,7 +71,7 @@ export function SolutionSection() {
             {' '}+ Notura
           </h2>
           <p className="text-base md:text-lg text-zinc-600 leading-[1.85]">
-            Framework comprovado de gestão de reuniões, turbinado pela inteligência
+            6 passos simples para conduzir qualquer reunião, turbinados pela inteligência
             artificial do Notura para garantir que cada reunião vire ação real.
           </p>
         </TextReveal>
@@ -154,7 +154,7 @@ export function SolutionSection() {
                       rel="noopener noreferrer"
                       className="text-[0.8125rem] font-semibold text-[#5341CD] inline-flex items-center gap-1 mt-1 hover:gap-2 transition-all"
                     >
-                      Ver planos <span>→</span>
+                      Quero o combo <span>→</span>
                     </a>
                   </div>
                 </div>

@@ -152,7 +152,7 @@ export function PricingSection() {
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                     </svg>
                   ))}
-                  <span className="text-[0.75rem] font-bold text-[#0A0A0A] ml-1">4.8</span>
+                  <span className="text-[0.75rem] font-bold text-[#0A0A0A] ml-1">4.9</span>
                 </div>
                 <span className="text-[0.75rem] text-zinc-400">·</span>
                 <span className="text-[0.75rem] text-zinc-500">Excelente</span>
@@ -163,8 +163,8 @@ export function PricingSection() {
               {/* Price */}
               <div>
                 <div className="flex items-baseline gap-2 mb-0.5">
-                  <span className="text-[0.8125rem] text-zinc-400 line-through">R$ 297,00</span>
-                  <span className="text-[0.6875rem] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-md">-67%</span>
+                  <span className="text-[0.8125rem] text-zinc-400 line-through">R$ 342,00</span>
+                  <span className="text-[0.6875rem] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-md">-71%</span>
                 </div>
                 <div className="flex items-baseline">
                   <span className="text-[1.125rem] font-bold text-[#0A0A0A] mr-0.5">R$</span>
@@ -186,7 +186,7 @@ export function PricingSection() {
                   className="w-full justify-center text-[0.875rem] font-extrabold tracking-wide"
                   magnetic
                 >
-                  🚀 QUERO ACESSAR AGORA
+                  🚀 Quero o combo por R$97,90
                 </GrainientBtn>
               </div>
 

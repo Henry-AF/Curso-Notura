@@ -3,10 +3,10 @@ import { CountUp } from '@/components/animations/CountUp'
 import { TextReveal } from '@/components/animations/TextReveal'
 
 const stats = [
-  { value: 500, suffix: '+', label: 'empresas usando o Notura' },
+  { value: 100, suffix: '+', label: 'empresas usando o Notura' },
   { value: 98, suffix: '%', label: 'de satisfação dos usuários' },
   { value: 40, suffix: '%', label: 'menos retrabalho em reuniões' },
-  { value: 3, suffix: 'h', label: 'economizadas por semana' },
+  { value: 5, suffix: 'h', label: 'economizadas por semana' },
 ]
 
 export function AuthorityBar() {

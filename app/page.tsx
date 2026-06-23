@@ -24,8 +24,8 @@ export default function Home() {
       <TestimonialsSection />
       <PricingSection />
       <FAQSection />
-      <NewsletterSection />
       <Footer />
+      <NewsletterSection />
     </main>
   )
 }

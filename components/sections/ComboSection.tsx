@@ -2,6 +2,7 @@
   import Image from 'next/image'
   import { TextReveal } from '@/components/animations/TextReveal'
   import ShinyText from '@/components/ui/ShinyText/ShinyText'
+  import { GrainientBtn } from '@/components/ui/GrainientBtn'
 
   const tags = [
     '📋 Reunião de alinhamento semanal',
@@ -25,8 +26,9 @@
               className="font-bold tracking-[-0.02em] text-[#0A0A0A] leading-[1.08] mb-4"
               style={{ fontSize: 'clamp(2.25rem, 5vw, 3.75rem)' }}
             >
+              Toda reunião vira{' '}
               <ShinyText
-                text="Método + Tecnologia."
+                text="resumo, decisões e tarefas"
                 color="#0A0A0A"
                 shineColor="#9B8AFB"
                 speed={3}
@@ -38,12 +40,22 @@
               />
               <br />
               <span className="text-zinc-500 font-normal" style={{ fontSize: '85%' }}>
-                Tudo que você precisa.
+                sem você anotar nada.
               </span>
             </h2>
-            <p className="text-base md:text-lg text-zinc-600 leading-[1.85]">
-              Um mini curso completo para dominar reuniões e o app mais inteligente do Brasil para executar.
+            <p className="text-base md:text-lg text-zinc-600 leading-[1.85] mb-8">
+              O Notura é o app brasileiro que grava e organiza suas reuniões com IA.
+              E o Método R.E.U.N.I.R. te ensina a transformar cada conversa em resultado.
+              
             </p>
+            <div className="flex flex-col items-center gap-2">
+              <GrainientBtn href="https://pay.kiwify.com.br/sNuERYe" size="lg" magnetic>
+                Quero o combo →
+              </GrainientBtn>
+              <p className="text-[0.75rem] text-zinc-400">
+                Acesso vitalício ao método + 1 mês de Notura PRO
+              </p>
+            </div>
           </TextReveal>
 
           {/* Product showcase */}

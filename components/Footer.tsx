@@ -1,10 +1,11 @@
 'use client'
 import Image from 'next/image'
+import Link from 'next/link'
 
 const legal = [
-  ['Política de Privacidade', '#'],
-  ['Termos de Uso', '#'],
-  ['LGPD', '#'],
+  ['Política de Privacidade', '/politica-de-privacidade'],
+  ['Termos de Uso', '/termos-de-uso'],
+  ['LGPD', '/lgpd'],
 ]
 
 const produto = [
@@ -43,9 +44,9 @@ export function Footer() {
             <ul className="flex flex-col gap-2.5 list-none">
               {legal.map(([label, href]) => (
                 <li key={label}>
-                  <a href={href} className="text-[0.8125rem] text-[#9B9B9B] hover:text-white no-underline transition-colors duration-200">
+                  <Link href={href} className="text-[0.8125rem] text-[#9B9B9B] hover:text-white no-underline transition-colors duration-200">
                     {label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

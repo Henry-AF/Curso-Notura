@@ -268,8 +268,12 @@ export function OfferSection() {
                 </div>
               </div>
 
+              <p className="text-[0.75rem] text-zinc-500 leading-[1.6] mb-5">
+                Só o mês de Notura PRO já vale R$97. O método completo e os bônus vêm junto — praticamente de graça.
+              </p>
+
               <GrainientBtn href="https://pay.kiwify.com.br/sNuERYe" className="w-full justify-center" magnetic>
-                Ver oferta especial →
+                Quero o combo →
               </GrainientBtn>
             </div>
           </TextReveal>

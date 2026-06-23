@@ -104,7 +104,7 @@ export function Navbar() {
 
             {/* CTA */}
             <GrainientBtn href="https://pay.kiwify.com.br/sNuERYe" magnetic>
-              QUERO ACESSAR AGORA
+              Quero o combo →
             </GrainientBtn>
           </div>
         </div>
