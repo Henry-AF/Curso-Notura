@@ -26,7 +26,7 @@ export function GrainientBtn({
   const displayStyle = className.includes('w-full') ? { display: 'flex' as const } : undefined
 
   const inner = href ? (
-    <a href={href} className={btnClass} style={displayStyle} target={target}>
+    <a href={href} className={btnClass} style={displayStyle} target={target} onClick={onClick}>
       <span className="shimmer-overlay" />
       {children}
     </a>

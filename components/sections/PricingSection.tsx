@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { TextReveal } from '@/components/animations/TextReveal'
 import { ShuffleText } from '@/components/ui/ShuffleText/ShuffleText'
 import { GrainientBtn } from '@/components/ui/GrainientBtn'
+import { trackEvent } from '@/components/FacebookPixelProvider'
 
 function CountUp({
   end,
@@ -185,6 +186,7 @@ export function PricingSection() {
                   size="lg"
                   className="w-full justify-center text-[0.875rem] font-extrabold tracking-wide"
                   magnetic
+                  onClick={() => trackEvent('InitiateCheckout')}
                 >
                   🚀 Quero o combo por R$97,90
                 </GrainientBtn>

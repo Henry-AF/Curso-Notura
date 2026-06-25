@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { GrainientBtn } from '@/components/ui/GrainientBtn'
+import { trackEvent } from '@/components/FacebookPixelProvider'
 import { StaggeredMenu } from '@/components/ui/StaggeredMenu/StaggeredMenu'
 
 const navLinks = [
@@ -103,7 +104,7 @@ export function Navbar() {
             </ul>
 
             {/* CTA */}
-            <GrainientBtn href="https://pay.kiwify.com.br/sNuERYe" magnetic>
+            <GrainientBtn href="https://pay.kiwify.com.br/sNuERYe" magnetic onClick={() => trackEvent('InitiateCheckout')}>
               Quero o combo →
             </GrainientBtn>
           </div>

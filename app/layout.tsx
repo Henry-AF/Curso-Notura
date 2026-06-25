@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import ClarityProvider from '@/components/ClarityProvider'
+import FacebookPixelProvider from '@/components/FacebookPixelProvider'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="pt-BR" className="scroll-smooth">
       <body className="antialiased">
         <ClarityProvider />
+        <FacebookPixelProvider />
         {children}
       </body>
     </html>

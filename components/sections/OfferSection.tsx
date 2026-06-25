@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { TextReveal } from '@/components/animations/TextReveal'
 import { GrainientBtn } from '@/components/ui/GrainientBtn'
+import { trackEvent } from '@/components/FacebookPixelProvider'
 
 const tabs = [
   {
@@ -272,7 +273,7 @@ export function OfferSection() {
                 Só o mês de Notura PRO já vale R$97. O método completo e os bônus vêm junto — praticamente de graça.
               </p>
 
-              <GrainientBtn href="https://pay.kiwify.com.br/sNuERYe" className="w-full justify-center" magnetic>
+              <GrainientBtn href="https://pay.kiwify.com.br/sNuERYe" className="w-full justify-center" magnetic onClick={() => trackEvent('InitiateCheckout')}>
                 Quero o combo →
               </GrainientBtn>
             </div>

@@ -3,6 +3,7 @@
   import { TextReveal } from '@/components/animations/TextReveal'
   import ShinyText from '@/components/ui/ShinyText/ShinyText'
   import { GrainientBtn } from '@/components/ui/GrainientBtn'
+  import { trackEvent } from '@/components/FacebookPixelProvider'
 
   const tags = [
     '📋 Reunião de alinhamento semanal',
@@ -49,7 +50,7 @@
               
             </p>
             <div className="flex flex-col items-center gap-2">
-              <GrainientBtn href="https://pay.kiwify.com.br/sNuERYe" size="lg" magnetic>
+              <GrainientBtn href="https://pay.kiwify.com.br/sNuERYe" size="lg" magnetic onClick={() => trackEvent('InitiateCheckout')}>
                 Quero o combo →
               </GrainientBtn>
               <p className="text-[0.75rem] text-zinc-400">

@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { TextReveal } from '@/components/animations/TextReveal'
 import ShinyText from '@/components/ui/ShinyText/ShinyText'
 import { GrainientBtn } from '@/components/ui/GrainientBtn'
+import { trackEvent } from '@/components/FacebookPixelProvider'
 
 const reunirSteps = [
   { l: 'R', w: 'Registrar' },
@@ -111,7 +112,7 @@ export function SolutionSection() {
                 </div>
                 <div className="flex items-center justify-between mt-auto pt-2">
                   <span className="text-[0.6875rem] text-white/45">5 módulos · acesso vitalício</span>
-                  <GrainientBtn href="https://pay.kiwify.com.br/sNuERYe" size="sm">
+                  <GrainientBtn href="https://pay.kiwify.com.br/sNuERYe" size="sm" onClick={() => trackEvent('InitiateCheckout')}>
                     Quero o combo →
                   </GrainientBtn>
                 </div>
@@ -153,6 +154,7 @@ export function SolutionSection() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-[0.8125rem] font-semibold text-[#5341CD] inline-flex items-center gap-1 mt-1 hover:gap-2 transition-all"
+                      onClick={() => trackEvent('InitiateCheckout')}
                     >
                       Quero o combo <span>→</span>
                     </a>
