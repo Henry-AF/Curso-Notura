@@ -4,11 +4,14 @@ import { TextReveal } from '@/components/animations/TextReveal'
 import { GrainientBtn } from '@/components/ui/GrainientBtn'
 import { trackEvent } from '@/components/MetaPixel'
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Para adicionar uma imagem: coloque o WebP em /public e mude img de null para
-// o caminho (ex.: '/acesso-checkout.webp'). null exibe o placeholder cinza.
-// ─────────────────────────────────────────────────────────────────────────────
-type Step = { number: number; title: string; description: string; img: string | null }
+type Step = {
+  number: number
+  title: string
+  description: string
+  img: string | null
+  imgW: number
+  imgH: number
+}
 
 const STEPS: Step[] = [
   {
@@ -17,31 +20,39 @@ const STEPS: Step[] = [
     description:
       'Pix com liberação instantânea ou cartão em minutos. Aprovou, o acesso já sai.',
     img: null, // PLACEHOLDER_IMG_1 — adicione /acesso-checkout.webp quando tiver o print
+    imgW: 560,
+    imgH: 315,
   },
   {
     number: 2,
     title: 'Receba o acesso ao Método',
     description:
       'Chega o e-mail do Kiwify com seu acesso à área de membros.',
-    img: null, // PLACEHOLDER_IMG_2 — adicione /acesso-email-metodo.webp
+    img: '/email-acess.png',
+    imgW: 994,
+    imgH: 1600,
   },
   {
     number: 3,
     title: 'Comece o Método R.E.U.N.I.R.',
     description:
       '7 módulos diretos ao ponto, do primeiro passo à prática com IA. Acesso vitalício.',
-    img: null, // PLACEHOLDER_IMG_3 — adicione /acesso-modulos.webp
+    img: '/Curso-kiwify.png',
+    imgW: 471,
+    imgH: 503,
   },
   {
     number: 4,
     title: 'Ative seu Notura PRO',
     description:
       'Seu mês de PRO já vem ativo. Defina a senha pelo e-mail do Notura e grave sua primeira reunião.',
-    img: null, // PLACEHOLDER_IMG_4 — adicione /acesso-notura-pro.webp
+    img: '/email-resend.png',
+    imgW: 738,
+    imgH: 1422,
   },
 ]
 
-// Visual 100% espelhado do HowItWorks: mesma moldura, pill, stagger, animações.
+// Visual espelhado do HowItWorks: mesma moldura, pill, stagger, animações.
 function StepRow({ step }: { step: Step }) {
   const isEven = step.number % 2 === 0
 
@@ -51,22 +62,19 @@ function StepRow({ step }: { step: Step }) {
       {/* Imagem emoldurada — fora do TextReveal (nunca opacity:0 em imagens) */}
       <div className={isEven ? 'md:order-2' : 'md:order-1'}>
         <div
-          className="rounded-[14px] overflow-hidden"
-          style={{ boxShadow: '0 2px 16px rgba(0,0,0,0.08)' }}
+          className="rounded-[14px] overflow-hidden flex items-center justify-center"
+          style={{ background: '#EEF0FF', boxShadow: '0 2px 16px rgba(0,0,0,0.08)' }}
         >
           {step.img ? (
             <Image
               src={step.img}
               alt={step.title}
-              width={560}
-              height={315}
-              className="w-full h-auto block"
+              width={step.imgW}
+              height={step.imgH}
+              className="max-h-[500px] w-auto h-auto block"
             />
           ) : (
-            <div
-              className="aspect-video flex items-center justify-center"
-              style={{ background: '#EEF0FF' }}
-            >
+            <div className="w-full aspect-video flex items-center justify-center">
               <span className="text-[#C4BFF5] text-sm font-medium select-none pointer-events-none">
                 📸 Passo {step.number}
               </span>
@@ -105,7 +113,6 @@ export function HowYouGetAccess() {
     <section id="como-receber" className="py-24 md:py-28 bg-[#FAFAFA]">
       <div className="page-shell">
 
-        {/* Cabeçalho */}
         <TextReveal direction="up" className="max-w-3xl mx-auto text-center mb-16">
           <div className="notura-pill mb-6">🔑 Como Você Recebe</div>
           <h2
@@ -120,14 +127,12 @@ export function HowYouGetAccess() {
           </p>
         </TextReveal>
 
-        {/* Steps escalonados */}
         <div className="flex flex-col gap-14 md:gap-20">
           {STEPS.map((step) => (
             <StepRow key={step.number} step={step} />
           ))}
         </div>
 
-        {/* CTA */}
         <TextReveal direction="up" delay={200} className="mt-16 flex justify-center">
           <GrainientBtn
             href="https://pay.kiwify.com.br/sNuERYe"

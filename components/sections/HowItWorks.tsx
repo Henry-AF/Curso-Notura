@@ -2,41 +2,52 @@
 import Image from 'next/image'
 import { TextReveal } from '@/components/animations/TextReveal'
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Steps ordenados: 1 Grave → 2 IA organiza → 3 WhatsApp → 4 Kanban
-// Para adicionar uma imagem real: coloque o arquivo em /public e mude img para
-// o caminho (ex.: '/como-usar-gravar.webp'). null exibe o placeholder cinza.
-// ─────────────────────────────────────────────────────────────────────────────
-type Step = { number: number; title: string; description: string; img: string | null }
+type Step = {
+  number: number
+  title: string
+  description: string
+  img: string | null
+  imgW: number
+  imgH: number
+}
 
+// Steps na ordem: Grave → IA organiza → WhatsApp → Kanban
 const STEPS: Step[] = [
   {
     number: 1,
     title: 'Grave a reunião',
     description:
       'Abra o Notura no celular ou no computador, aperte gravar e foque na conversa. O app captura tudo em áudio, ao vivo.',
-    img: null, // PLACEHOLDER_IMG_1 — ex.: '/como-usar-gravar.webp'
+    img: '/gravar-reuniao.jpeg',
+    imgW: 900,
+    imgH: 1600,
   },
   {
     number: 2,
     title: 'A IA organiza tudo',
     description:
       'Em instantes, a IA transcreve, categoriza e extrai decisões, riscos e pendências — sem você digitar uma palavra.',
-    img: null, // PLACEHOLDER_IMG_2 — ex.: '/como-usar-ia.webp'
+    img: '/IA-chat.jpeg',
+    imgW: 900,
+    imgH: 1600,
   },
   {
     number: 3,
     title: 'Receba o resumo no WhatsApp',
     description:
       'O resumo estruturado chega direto no seu WhatsApp assim que a IA processa. Compartilhe com o time em um toque.',
-    img: null, // PLACEHOLDER_IMG_3 — ex.: '/como-usar-whatsapp.webp'
+    img: '/resumo.jpeg',
+    imgW: 900,
+    imgH: 1600,
   },
   {
     number: 4,
     title: 'Tarefas vão pro Kanban',
     description:
       'Cada tarefa e responsável identificado na reunião vira um card no Kanban do Notura. Nada mais some no esquecimento.',
-    img: null, // PLACEHOLDER_IMG_4 — ex.: '/como-usar-kanban.webp'
+    img: '/kanban.jpeg',
+    imgW: 900,
+    imgH: 1600,
   },
 ]
 
@@ -49,22 +60,19 @@ function StepRow({ step }: { step: Step }) {
       {/* Imagem emoldurada — fora do TextReveal (nunca opacity:0 em imagens) */}
       <div className={isEven ? 'md:order-2' : 'md:order-1'}>
         <div
-          className="rounded-[14px] overflow-hidden"
-          style={{ boxShadow: '0 2px 16px rgba(0,0,0,0.08)' }}
+          className="rounded-[14px] overflow-hidden flex items-center justify-center"
+          style={{ background: '#EEF0FF', boxShadow: '0 2px 16px rgba(0,0,0,0.08)' }}
         >
           {step.img ? (
             <Image
               src={step.img}
               alt={step.title}
-              width={560}
-              height={315}
-              className="w-full h-auto block"
+              width={step.imgW}
+              height={step.imgH}
+              className="max-h-[500px] w-auto h-auto block"
             />
           ) : (
-            <div
-              className="aspect-video flex items-center justify-center"
-              style={{ background: '#EEF0FF' }}
-            >
+            <div className="w-full aspect-video flex items-center justify-center">
               <span className="text-[#C4BFF5] text-sm font-medium select-none pointer-events-none">
                 📸 Passo {step.number}
               </span>
@@ -103,7 +111,6 @@ export function HowItWorks() {
     <section id="como-usar" className="py-24 md:py-28 bg-white">
       <div className="page-shell">
 
-        {/* Cabeçalho */}
         <TextReveal direction="up" className="max-w-3xl mx-auto text-center mb-16">
           <div className="notura-pill mb-6">📱 Como Usar</div>
           <h2
@@ -118,7 +125,6 @@ export function HowItWorks() {
           </p>
         </TextReveal>
 
-        {/* Steps escalonados */}
         <div className="flex flex-col gap-14 md:gap-20">
           {STEPS.map((step) => (
             <StepRow key={step.number} step={step} />
