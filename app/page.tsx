@@ -4,6 +4,8 @@ import { ProblemSection } from '@/components/sections/ProblemSection'
 import { ComboSection } from '@/components/sections/ComboSection'
 import { OfferSection } from '@/components/sections/OfferSection'
 import { ComoFunciona } from '@/components/sections/ComoFunciona'
+import { HowYouGetAccess } from '@/components/sections/HowYouGetAccess'
+import { HowItWorks } from '@/components/sections/HowItWorks'
 import { TestimonialsSection } from '@/components/sections/TestimonialsSection'
 import { PricingSection } from '@/components/sections/PricingSection'
 import { FAQSection } from '@/components/sections/FAQSection'
@@ -21,6 +23,10 @@ export default function Home() {
       <OfferSection />
       <div className="section-divider" />
       <ComoFunciona />
+      <div className="section-divider" />
+      <HowYouGetAccess />
+      <div className="section-divider" />
+      <HowItWorks />
       <div className="section-divider" />
       <TestimonialsSection />
       <PricingSection />
