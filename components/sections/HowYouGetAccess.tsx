@@ -19,7 +19,7 @@ const STEPS: Step[] = [
     title: 'Pague e libere na hora',
     description:
       'Pix com liberação instantânea ou cartão em minutos. Aprovou, o acesso já sai.',
-    img: null, // PLACEHOLDER_IMG_1 — adicione /acesso-checkout.webp quando tiver o print
+    img: '/compra.png', // PLACEHOLDER_IMG_1 — adicione /acesso-checkout.webp quando tiver o print
     imgW: 560,
     imgH: 315,
   },
@@ -28,7 +28,7 @@ const STEPS: Step[] = [
     title: 'Receba o acesso ao Método',
     description:
       'Chega o e-mail do Kiwify com seu acesso à área de membros.',
-    img: '/email-acess.png',
+    img: '/email-acess-1.png',
     imgW: 994,
     imgH: 1600,
   },
@@ -46,7 +46,7 @@ const STEPS: Step[] = [
     title: 'Ative seu Notura PRO',
     description:
       'Seu mês de PRO já vem ativo. Defina a senha pelo e-mail do Notura e grave sua primeira reunião.',
-    img: '/email-resend.png',
+    img: '/email-resend-1.png',
     imgW: 738,
     imgH: 1422,
   },

@@ -147,7 +147,7 @@ export function PricingSection() {
                 <div className="flex items-center gap-0.5">
                   {[1, 2, 3, 4, 5].map((i) => (
                     <svg key={i} width="14" height="14" viewBox="0 0 24 24"
-                      fill={i <= 4 ? '#f59e0b' : 'none'}
+                      fill='#f59e0b'
                       stroke="#f59e0b" strokeWidth="1.5"
                     >
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -175,7 +175,7 @@ export function PricingSection() {
                   <span className="text-[1.125rem] font-bold text-[#0A0A0A]">,90</span>
                 </div>
                 <p className="text-[0.8125rem] text-zinc-500 mt-1">
-                  Ou <strong className="text-[#0A0A0A]">10x de R$ 9,79</strong> sem juros no cartão
+                  Ou <strong className="text-[#0A0A0A]">12x de R$ 10,13</strong> sem juros no cartão
                 </p>
               </div>
 
