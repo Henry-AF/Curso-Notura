@@ -61,50 +61,50 @@
 
           {/* Product showcase */}
           <div className="flex flex-col md:flex-row items-center justify-center gap-10 md:gap-16 mb-16">
-            {/* Book with 3D effect */}
-            <TextReveal direction="up" delay={100}>
-              <div
-                style={{
-                  boxShadow: '-8px 8px 0 #1a0a6b, 6px 12px 48px rgba(83,65,205,0.5)',
-                  borderRadius: '4px 18px 18px 4px',
-                  width: 280,
-                  maxWidth: 'min(280px, 85vw)',
-                  flexShrink: 0,
-                }}
-              >
-                <Image
-                  src="/capa-livro.png"
-                  alt="Método R.E.U.N.I.R. — Capa do livro"
-                  width={280}
-                  height={392}
-                  priority
-                  style={{ borderRadius: '4px 18px 18px 4px', display: 'block', maxWidth: '100%', height: 'auto' }}
-                />
-              </div>
-            </TextReveal>
+            {/* Book with 3D effect — sem TextReveal para não atrasar LCP */}
+            <div
+              style={{
+                boxShadow: '-8px 8px 0 #1a0a6b, 6px 12px 48px rgba(83,65,205,0.5)',
+                borderRadius: '4px 18px 18px 4px',
+                width: 280,
+                maxWidth: 'min(280px, 85vw)',
+                flexShrink: 0,
+              }}
+            >
+              <Image
+                src="/capa-livro.webp"
+                alt="Método R.E.U.N.I.R. — Capa do livro"
+                width={280}
+                height={420}
+                priority
+                unoptimized
+                sizes="(max-width: 639px) 85vw, 280px"
+                style={{ borderRadius: '4px 18px 18px 4px', display: 'block', maxWidth: '100%', height: 'auto' }}
+              />
+            </div>
 
             {/* Plus sign */}
             <TextReveal direction="up" delay={200}>
               <span className="text-3xl font-black text-[#5341CD] opacity-40 select-none">+</span>
             </TextReveal>
 
-            {/* App mockup */}
-            <TextReveal direction="up" delay={300}>
-              <Image
-                src="/home-mockup-new.png"
-                alt="App Notura — Mockup"
-                width={270}
-                height={540}
-                priority
-                style={{
-                  borderRadius: 16,
-                  display: 'block',
-                  maxWidth: 'min(270px, 85vw)',
-                  height: 'auto',
-                  filter: 'drop-shadow(0 12px 32px rgba(0,0,0,0.15))',
-                }}
-              />
-            </TextReveal>
+            {/* App mockup — sem TextReveal para não atrasar LCP */}
+            <Image
+              src="/home-mockup-new.webp"
+              alt="App Notura — Mockup"
+              width={270}
+              height={541}
+              priority
+              unoptimized
+              sizes="(max-width: 639px) 85vw, 270px"
+              style={{
+                borderRadius: 16,
+                display: 'block',
+                maxWidth: 'min(270px, 85vw)',
+                height: 'auto',
+                filter: 'drop-shadow(0 12px 32px rgba(0,0,0,0.15))',
+              }}
+            />
           </div>
 
           {/* Exemplos práticos */}

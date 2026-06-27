@@ -17,6 +17,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" className="scroll-smooth">
+      <head>
+        {/* Preload das imagens LCP acima da dobra */}
+        <link rel="preload" as="image" href="/capa-livro.webp" fetchPriority="high" type="image/webp" />
+        <link rel="preload" as="image" href="/home-mockup-new.webp" fetchPriority="high" type="image/webp" />
+      </head>
       <body className="antialiased">
         <MetaPixel />
         <ClarityProvider />
