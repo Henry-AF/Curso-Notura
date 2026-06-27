@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { TextReveal } from '@/components/animations/TextReveal'
 import ShinyText from '@/components/ui/ShinyText/ShinyText'
 import { GrainientBtn } from '@/components/ui/GrainientBtn'
-import { trackEvent } from '@/components/FacebookPixelProvider'
+import { trackEvent } from '@/components/MetaPixel'
 
 const reunirSteps = [
   { l: 'R', w: 'Registrar' },

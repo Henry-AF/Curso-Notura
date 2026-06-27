@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { TextReveal } from '@/components/animations/TextReveal'
 import { GrainientBtn } from '@/components/ui/GrainientBtn'
-import { trackEvent } from '@/components/FacebookPixelProvider'
+import { trackEvent } from '@/components/MetaPixel'
 
 const tabs = [
   {

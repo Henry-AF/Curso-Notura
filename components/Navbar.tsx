@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { GrainientBtn } from '@/components/ui/GrainientBtn'
-import { trackEvent } from '@/components/FacebookPixelProvider'
+import { trackEvent } from '@/components/MetaPixel'
 import { StaggeredMenu } from '@/components/ui/StaggeredMenu/StaggeredMenu'
 
 const navLinks = [
