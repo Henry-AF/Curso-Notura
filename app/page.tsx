@@ -1,9 +1,9 @@
 import { Navbar } from '@/components/Navbar'
 import { AuthorityBar } from '@/components/sections/AuthorityBar'
 import { ProblemSection } from '@/components/sections/ProblemSection'
-import { SolutionSection } from '@/components/sections/SolutionSection'
 import { ComboSection } from '@/components/sections/ComboSection'
 import { OfferSection } from '@/components/sections/OfferSection'
+import { ComoFunciona } from '@/components/sections/ComoFunciona'
 import { TestimonialsSection } from '@/components/sections/TestimonialsSection'
 import { PricingSection } from '@/components/sections/PricingSection'
 import { FAQSection } from '@/components/sections/FAQSection'
@@ -18,9 +18,10 @@ export default function Home() {
       <AuthorityBar />
       <ProblemSection />
       <div className="section-divider" />
-      <SolutionSection />
-      <div className="section-divider" />
       <OfferSection />
+      <div className="section-divider" />
+      <ComoFunciona />
+      <div className="section-divider" />
       <TestimonialsSection />
       <PricingSection />
       <FAQSection />
